@@ -1,27 +1,19 @@
 {
-  "name": "login-with-twitter",
-  "description": "Login with Twitter. OAuth without the nonsense.",
-  "version": "1.2.4",
-  "author": {
-    "name": "Feross Aboukhadijeh",
-    "email": "feross@feross.org",
-    "url": "https://feross.org"
-  },
+  "name": "@umanghome/login-with-twitter-cf-workers",
+  "description": "Login with Twitter. OAuth without the nonsense - for CloudFlare Workers",
+  "version": "1.0.0",
+  "author": "Umang Galaiya (https://umanggalaiya.in)",
   "browser": {
     "unzip-response": false
   },
   "bugs": {
-    "url": "https://github.com/feross/login-with-twitter/issues"
+    "url": "https://github.com/umanghome/login-with-twitter-cf-workers/issues"
   },
   "dependencies": {
-    "oauth-1.0a": "^2.2.6",
-    "simple-get": "^4.0.0"
+    "oauth-1.0a": "^2.2.6"
   },
-  "devDependencies": {
-    "standard": "*",
-    "tape": "^5.0.1"
-  },
-  "homepage": "https://github.com/feross/login-with-twitter",
+  "devDependencies": {},
+  "homepage": "https://github.com/umanghome/login-with-twitter-cf-workers",
   "keywords": [
     "login",
     "twitter",
@@ -40,21 +32,14 @@
     "type": "git",
     "url": "git://github.com/feross/login-with-twitter.git"
   },
-  "scripts": {
-    "test": "standard && tape test/*.js"
-  },
   "funding": [
     {
       "type": "github",
-      "url": "https://github.com/sponsors/feross"
-    },
-    {
-      "type": "patreon",
-      "url": "https://www.patreon.com/feross"
+      "url": "https://github.com/sponsors/umanghome"
     },
     {
       "type": "consulting",
-      "url": "https://feross.org/support"
+      "url": "https://umanggalaiya.in"
     }
   ]
 }

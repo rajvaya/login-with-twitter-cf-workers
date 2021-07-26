@@ -1,4 +1,4 @@
-/*! login-with-twitter. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+/*! @umanghome/login-with-twitter-cf-workers. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> and Umang Galaiya <https://umanggalaiya.in> */
 const crypto = require('crypto');
 const OAuth = require('oauth-1.0a');
 
