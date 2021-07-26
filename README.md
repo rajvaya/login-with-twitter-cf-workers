@@ -7,6 +7,8 @@
 
 ### Login with Twitter for CloudFlare Workers. OAuth without the nonsense.
 
+Forked from [feross/login-with-twitter](https://github.com/feross/login-with-twitter) and modified to be executable on [CloudFlare Workers](https://workers.cloudflare.com/).
+
 ## Features
 
 This module is designed to be the lightest possible wrapper on Twitter OAuth.
