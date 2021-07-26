@@ -1,7 +1,6 @@
 /*! login-with-twitter. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 const crypto = require('crypto');
 const OAuth = require('oauth-1.0a');
-const querystring = require('querystring');
 
 const TW_REQ_TOKEN_URL = 'https://api.twitter.com/oauth/request_token';
 const TW_AUTH_URL = 'https://api.twitter.com/oauth/authenticate';
@@ -64,7 +63,7 @@ class LoginWithTwitter {
           oauth_token: token,
           oauth_token_secret: tokenSecret,
           oauth_callback_confirmed: callbackConfirmed,
-        } = querystring.parse(res);
+        } = parseQueryString(res);
 
         // Must validate that this param exists, according to Twitter docs
         if (callbackConfirmed !== 'true') {
@@ -76,7 +75,7 @@ class LoginWithTwitter {
         }
 
         // Redirect visitor to this URL to authorize the app
-        const url = `${TW_AUTH_URL}?${querystring.stringify({
+        const url = `${TW_AUTH_URL}?${makeQueryString({
           oauth_token: token,
         })}`;
 
@@ -135,7 +134,7 @@ class LoginWithTwitter {
     // Get a user "access token" and "access token secret"
     return fetch(requestData.url, {
       method: requestData.method,
-      body: querystring.encode(requestData.data),
+      body: makeQueryString(requestData.data),
       headers: this._oauth.toHeader(this._oauth.authorize(requestData)),
     })
       .then((res) => res.text())
@@ -146,7 +145,7 @@ class LoginWithTwitter {
           oauth_token_secret: userTokenSecret,
           screen_name: userName,
           user_id: userId,
-        } = querystring.parse(res);
+        } = parseQueryString(res);
 
         return {
           userName,
@@ -159,3 +158,24 @@ class LoginWithTwitter {
 }
 
 module.exports = LoginWithTwitter;
+
+function makeQueryString(object) {
+  const url = new URLSearchParams();
+
+  Object.keys(object).forEach((key) => {
+    url.set(key, object[key]);
+  });
+
+  return url.toString();
+}
+
+function parseQueryString(string) {
+  const url = new URLSearchParams(string);
+  const object = {};
+
+  for (var key of url.keys()) {
+    object[key] = url.get(key);
+  }
+
+  return object;
+}
