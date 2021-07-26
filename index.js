@@ -1,6 +1,5 @@
 /*! login-with-twitter. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 const crypto = require('crypto');
-const get = require('simple-get');
 const OAuth = require('oauth-1.0a');
 const querystring = require('querystring');
 
@@ -40,12 +39,7 @@ class LoginWithTwitter {
     });
   }
 
-  login(cb) {
-    // Check that required params exist
-    if (typeof cb !== 'function') {
-      throw new Error('Invalid or missing `cb` parameter for login method');
-    }
-
+  login() {
     const requestData = {
       url: TW_REQ_TOKEN_URL,
       method: 'POST',
@@ -54,26 +48,27 @@ class LoginWithTwitter {
       },
     };
 
-    // Get a "request token"
-    get.concat(
-      {
-        url: requestData.url,
-        method: requestData.method,
-        form: requestData.data,
-        headers: this._oauth.toHeader(this._oauth.authorize(requestData)),
+    const requestOptions = {
+      method: requestData.method,
+      headers: {
+        ...this._oauth.toHeader(this._oauth.authorize(requestData)),
+        'Content-Type': 'application/json',
       },
-      (err, res, data) => {
-        if (err) return cb(err);
+    };
 
+    // Get a "request token"
+    return fetch(requestData.url, requestOptions)
+      .then((res) => res.text())
+      .then((res) => {
         const {
           oauth_token: token,
           oauth_token_secret: tokenSecret,
           oauth_callback_confirmed: callbackConfirmed,
-        } = querystring.parse(data.toString());
+        } = querystring.parse(res);
 
         // Must validate that this param exists, according to Twitter docs
         if (callbackConfirmed !== 'true') {
-          return cb(
+          return Promise.reject(
             new Error(
               'Missing `oauth_callback_confirmed` parameter in response (is the callback URL approved for this client application?)'
             )
@@ -85,28 +80,25 @@ class LoginWithTwitter {
           oauth_token: token,
         })}`;
 
-        cb(null, tokenSecret, url);
-      }
-    );
+        return {
+          tokenSecret,
+          url,
+        };
+      });
   }
 
-  callback(params, tokenSecret, cb) {
+  callback(params, tokenSecret) {
     const { oauth_token: token, oauth_verifier: verifier } = params;
 
-    // Check that required params exist
-    if (typeof cb !== 'function') {
-      throw new Error('Invalid or missing `cb` parameter for callback method');
-    }
     if (typeof params.denied === 'string' && params.denied.length > 0) {
-      const err = new Error('User denied login permission');
-      err.code = 'USER_DENIED';
-      return cb(err);
+      return Promise.reject(new Error('User denied login permission'));
     }
+
     if (
       typeof params.oauth_token !== 'string' ||
       params.oauth_token.length === 0
     ) {
-      return cb(
+      return Promise.reject(
         new Error(
           'Invalid or missing `oauth_token` parameter for login callback'
         )
@@ -116,14 +108,14 @@ class LoginWithTwitter {
       typeof params.oauth_verifier !== 'string' ||
       params.oauth_verifier.length === 0
     ) {
-      return cb(
+      return Promise.reject(
         new Error(
           'Invalid or missing `oauth_verifier` parameter for login callback'
         )
       );
     }
     if (typeof tokenSecret !== 'string' || tokenSecret.length === 0) {
-      return cb(
+      return Promise.reject(
         new Error(
           'Invalid or missing `tokenSecret` argument for login callback'
         )
@@ -141,32 +133,28 @@ class LoginWithTwitter {
     };
 
     // Get a user "access token" and "access token secret"
-    get.concat(
-      {
-        url: requestData.url,
-        method: requestData.method,
-        form: requestData.data,
-        headers: this._oauth.toHeader(this._oauth.authorize(requestData)),
-      },
-      (err, res, data) => {
-        if (err) return cb(err);
-
+    return fetch(requestData.url, {
+      method: requestData.method,
+      body: querystring.encode(requestData.data),
+      headers: this._oauth.toHeader(this._oauth.authorize(requestData)),
+    })
+      .then((res) => res.text())
+      .then((res) => {
         // Ready to make signed requests on behalf of the user
         const {
           oauth_token: userToken,
           oauth_token_secret: userTokenSecret,
           screen_name: userName,
           user_id: userId,
-        } = querystring.parse(data.toString());
+        } = querystring.parse(res);
 
-        cb(null, {
+        return {
           userName,
           userId,
           userToken,
           userTokenSecret,
-        });
-      }
-    );
+        };
+      });
   }
 }
 
