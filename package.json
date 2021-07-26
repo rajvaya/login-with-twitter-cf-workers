@@ -1,7 +1,7 @@
 {
   "name": "@umanghome/login-with-twitter-cf-workers",
   "description": "Login with Twitter. OAuth without the nonsense - for CloudFlare Workers",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Umang Galaiya (https://umanggalaiya.in)",
   "browser": {
     "unzip-response": false
@@ -30,7 +30,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/feross/login-with-twitter.git"
+    "url": "git://github.com/umanghome/login-with-twitter-cf-workers.git"
   },
   "funding": [
     {
